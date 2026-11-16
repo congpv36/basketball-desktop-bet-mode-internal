@@ -1,0 +1,38 @@
+{
+  "sports_book": "SportsBook",
+  "bet_list": "Bet List",
+  "failed_bet_list": "Failed Bet List",
+
+  "waiting_list": "Waiting List",
+  "contra_list": "Contra List",
+  "success_list": "Success List",
+  "league_filter": "League Filter",
+  "point_randomizer": "Point Randomizer",
+  "program_settings": "Program Settings",
+
+  "change_password": "Change Password",
+  "account_id": "Account ID",
+  "expired_date": "Expired Date",
+  "current_password": "Current Password",
+  "new_password": "New Password",
+  "confirm_password": "Confirm Password",
+  "note_change_password": "Changing your password will require you to enter your current password. The new password should be at least 8 characters long.",
+  "note_new_password": " At least 8 characters, including uppercase letters, numbers, and special characters.",
+
+  "general_settings": "General Settings",
+  "platform_pair": "Platform Pair",
+  "bet_settings": "Bet Settings",
+  "proxy_server_setting": "Proxy Server Setting",
+  "language": "Language",
+
+  "update_available": "Update available",
+  "update_available_desc": "The app will update when the app is closed.",
+  "exp": "EXP",
+
+  "english": "English",
+  "chinese": "Chinese",
+  "vietnamese": "Vietnamese",
+
+  "show_odds": "Show Odds",
+  "account_pair": "Account Pair"
+}

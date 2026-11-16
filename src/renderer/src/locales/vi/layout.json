@@ -1,0 +1,38 @@
+{
+  "sports_book": "Thể thao",
+  "bet_list": "Danh sách cược",
+  "failed_bet_list": "Danh sách cược lỗi",
+
+  "waiting_list": "Danh sách chờ",
+  "contra_list": "Danh sách đối cược",
+  "success_list": "Danh sách thành công",
+  "league_filter": "Bộ lọc giải đấu",
+  "point_randomizer": "Ngẫu nhiên điểm",
+  "program_settings": "Cài đặt",
+
+  "change_password": "Đổi mật khẩu",
+  "account_id": "ID Tài khoản",
+  "expired_date": "Ngày Hết Hạn",
+  "current_password": "Mật khẩu Hiện tại",
+  "new_password": "Mật khẩu Mới",
+  "confirm_password": "Xác nhận Mật khẩu",
+  "note_change_password": "Việc thay đổi mật khẩu sẽ yêu cầu bạn nhập mật khẩu hiện tại của mình. Mật khẩu mới phải có ít nhất 8 ký tự.",
+  "note_new_password": " Ít nhất 8 ký tự, bao gồm chữ hoa, số và ký tự đặc biệt.",
+
+  "general_settings": "Cài đặt chung",
+  "platform_pair": "Ghép cặp nền tảng",
+  "bet_settings": "Cài đặt ưu tiên",
+  "proxy_server_setting": "Cài đặt máy chủ Proxy",
+  "language": "Ngôn ngữ",
+
+  "update_available": "Có bản cập nhật",
+  "update_available_desc": "Ứng dụng sẽ tự cập nhật khi đóng.",
+  "exp": "HH",
+
+  "english": "Tiếng Anh",
+  "chinese": "Tiếng Trung",
+  "vietnamese": "Tiếng Việt",
+
+  "show_odds": "Hiển thị tỷ lệ",
+  "account_pair": "Ghép cặp tài khoản"
+}

@@ -1,0 +1,37 @@
+{
+  "sports_book": "体育博彩",
+  "bet_list": "投注列表",
+  "failed_bet_list": "失败投注列表",
+
+  "waiting_list": "等待列表",
+  "contra_list": "对冲列表",
+  "success_list": "成功列表",
+  "league_filter": "联赛筛选",
+  "point_randomizer": "随机分数",
+  "program_settings": "程序设置",
+
+  "change_password": "修改密码",
+  "account_id": "账户 ID",
+  "expired_date": "过期日期",
+  "current_password": "当前密码",
+  "new_password": "新密码",
+  "confirm_password": "确认密码",
+  "note_change_password": "修改密码需要您输入当前密码。新密码必须至少包含 8 个字符。",
+  "note_new_password": " 至少 8 个字符，包括大写字母、数字和特殊字符。",
+
+  "general_settings": "常规设置",
+  "platform_pair": "平台对",
+  "bet_settings": "投注设置",
+  "proxy_server_setting": "代理服务器设置",
+  "language": "语言",
+
+  "update_available": "有可用更新",
+  "update_available_desc": "关闭应用时将自动更新。",
+  "exp": "到期",
+  "english": "英语",
+  "chinese": "中文",
+  "vietnamese": "越南语",
+
+  "show_odds": "显示赔率",
+  "account_pair": "账户配对"
+}

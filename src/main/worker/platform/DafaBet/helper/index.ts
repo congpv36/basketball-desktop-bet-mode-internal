@@ -1,0 +1,220 @@
+import { AccountType } from '@shared/common/types'
+
+import {
+  EVENTS_API_HASH,
+  EVENTS_API_LOCALE,
+  getBaseUrl,
+  NO_VALUE_DAFABET
+} from '@/worker/platform/DafaBet/common/contants'
+import {
+  EventItem_DafaBet,
+  OpponentScore_DafaBet,
+  Outcome_DafaBet
+} from '@/worker/platform/DafaBet/common/types'
+
+export function buildPlatformUrl(account: AccountType, type: string) {
+  const url = getBaseUrl(account.loginURL)
+
+  const urlMap: Record<string, string> = {
+    LOGIN: `${url}en/api/plugins/component/route/header_login/authenticate`,
+    BALANCE: `${url}en/api/plugins/component/route/balance/getdetailedbalances?ignore%5B%5D=7`
+  }
+
+  return urlMap[type] ?? url
+}
+
+export function buildCouponsUrl(couponId: string | number) {
+  return `https://sports.dafabet.com/api/coupons/${couponId}?coupon_info=true&pub=${Math.floor(Date.now() / 1000)}&l=en&mc=web`
+}
+
+export function buildEventsUrl() {
+  return `https://sports.dafabet.com/xapi/rest/events?hash=${EVENTS_API_HASH}&l=${EVENTS_API_LOCALE}`
+}
+
+export function buildEventDetailUrl(eventId: string | number, isRunning = false) {
+  const params = new URLSearchParams({
+    bettable: 'true',
+    marketStatus: isRunning ? 'OPEN,SUSPENDED' : 'OPEN',
+    periodType: isRunning ? 'IN_RUNNING' : 'PRE_MATCH',
+    includeMarkets: 'true',
+    lightWeightResponse: 'true',
+    ...(isRunning && {
+      liveAboutToStart: 'true',
+      includeLiveEvents: 'true',
+      liveExcludeLongTermSuspended: 'true',
+      includeHiddenOutcomes: 'true'
+    }),
+    l: EVENTS_API_LOCALE
+  })
+
+  return `https://sports.dafabet.com/xapi/rest/events/${eventId}?${params.toString()}`
+}
+
+export function buildBetslipSelectionsUrl() {
+  return `https://sports.dafabet.com/xapi/rest/betslips/selections?l=${EVENTS_API_LOCALE}`
+}
+
+// TODO: min_amount is copied from the captured browser request, verify its meaning
+export function buildPlaceBetUrl(accountId: string | number, uuid: string) {
+  return `https://sports.dafabet.com/xapi/rest/accounts/${accountId}/betslips?valid=true&min_amount=4999&uuid=${uuid}&l=${EVENTS_API_LOCALE}`
+}
+
+export function buildCheckPlayerUrl() {
+  return `https://sports.dafabet.com/xapi/icore/checkplayer?l=${EVENTS_API_LOCALE}`
+}
+
+export function getCookieValue(cookie: string, name: string) {
+  const match = cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`))
+  return match ? match[1] : ''
+}
+
+export function buildLiveEventsUrl() {
+  const params = new URLSearchParams({
+    allBettableEvents: 'true',
+    bettable: 'true',
+    includeHiddenOutcomes: 'true',
+    includeLiveEvents: 'true',
+    includeMarkets: 'true',
+    lightWeightResponse: 'true',
+    liveAboutToStart: 'true',
+    liveExcludeLongTermSuspended: 'true',
+    liveMarketStatus: 'OPEN,SUSPENDED',
+    marketFilter: 'GAME',
+    marketStatus: 'OPEN',
+    sortMarketsByPriceDifference: 'true',
+    sportGroups: 'REGULAR',
+    periodType: 'IN_RUNNING',
+    eventPathIds: '227',
+    liveOnly: 'true',
+    marketTypeIds: BASKETBALL_MARKET_TYPE_IDS,
+    periodTypeIds: BASKETBALL_LIVE_PERIOD_TYPE_IDS,
+    excludeLongTermSuspended: 'true',
+    excludeMarketByOpponent: 'true',
+    maxMarketsPerMarketType: '3',
+    maxMarketPerEvent: '50',
+    l: EVENTS_API_LOCALE
+  })
+
+  return `https://sports.dafabet.com/xapi/rest/events?${params.toString()}`
+}
+
+const MS_PER_HOUR = 3_600_000
+const VN_OFFSET_MS = 7 * MS_PER_HOUR
+const MS_PER_DAY = 24 * MS_PER_HOUR
+const EVENTS_RANGE_DAYS = 7
+
+function toVnIsoString(utcMs: number) {
+  const d = new Date(utcMs + VN_OFFSET_MS)
+  const pad = (n: number, len = 2) => String(n).padStart(len, '0')
+  return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}T${pad(d.getUTCHours())}:${pad(d.getUTCMinutes())}:${pad(d.getUTCSeconds())}.${pad(d.getUTCMilliseconds(), 3)}+07:00`
+}
+
+export function buildEventsDateRange(now: Date = new Date()) {
+  const vnNowMs = now.getTime() + VN_OFFSET_MS
+  const dateFromMs = vnNowMs - (vnNowMs % MS_PER_DAY) - VN_OFFSET_MS
+
+  const dateToMs = dateFromMs + EVENTS_RANGE_DAYS * MS_PER_DAY
+
+  return {
+    dateFrom: toVnIsoString(dateFromMs),
+    dateTo: toVnIsoString(dateToMs)
+  }
+}
+
+export function getVnDateKey(date: Date) {
+  const vn = new Date(date.getTime() + VN_OFFSET_MS)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${vn.getUTCFullYear()}-${pad(vn.getUTCMonth() + 1)}-${pad(vn.getUTCDate())}`
+}
+
+export function convertDecimalToMalay(decimal: number) {
+  const malay = decimal >= 2 ? -1 / (decimal - 1) : decimal - 1
+  return Number(malay.toFixed(3))
+}
+
+export function convertMalayToDecimal(malay: number) {
+  const decimal = malay >= 0 ? 1 + malay : 1 - 1 / malay
+  return Number(decimal.toFixed(3))
+}
+
+export function buildHdpPoint(outcome: Outcome_DafaBet) {
+  const key1 = Number(outcome.extraKey1)
+  if (outcome.extraKey2 === NO_VALUE_DAFABET) return key1
+
+  return (key1 + Number(outcome.extraKey2)) / 2
+}
+
+export const EVENTS_PER_PAGE = 100
+const BASKETBALL_MARKET_TYPE_IDS =
+  '15,16,180,1257,3059,3060,3061,10241966,10241967,10241968,10242001,40671704'
+const BASKETBALL_PERIOD_TYPE_IDS = '168,171,189'
+const BASKETBALL_LIVE_PERIOD_TYPE_IDS = '268,271,272,314'
+
+export function buildEventsPayload(
+  eventPathIds: string,
+  page: number = 1,
+  { dateFrom, dateTo } = buildEventsDateRange()
+) {
+  return {
+    allBettableEvents: true,
+    bettable: true,
+    includeHiddenOutcomes: true,
+    includeMarkets: true,
+    lightWeightResponse: true,
+    marketFilter: 'GAME',
+    marketStatus: 'OPEN',
+    sportGroups: 'REGULAR',
+    sortMarketsByPriceDifference: true,
+    periodType: 'PRE_MATCH',
+    includeHiddenMarkets: false,
+    eventType: 'GAME',
+    eventPathIds,
+    eventsPerPage: EVENTS_PER_PAGE,
+    page,
+    dateFrom,
+    dateTo,
+    sortByEventpath: true,
+    sortByEventpathIds: eventPathIds,
+    excludeLongTermSuspended: true,
+    excludeMarketByOpponent: true,
+    maxMarketsPerMarketType: 3,
+    maxMarketPerEvent: 50,
+    marketTypeIds: BASKETBALL_MARKET_TYPE_IDS,
+    periodTypeIds: BASKETBALL_PERIOD_TYPE_IDS
+  }
+}
+
+const findOpponentScore = (list: OpponentScore_DafaBet[] | null | undefined, opponentId?: number) =>
+  list?.find((item) => item.opponentId === opponentId)
+
+export function buildLiveScore(event: EventItem_DafaBet, homeId?: number, awayId?: number) {
+  const scoreList = event.scores?.score
+  const home = findOpponentScore(scoreList, homeId)?.formattedPoints ?? '0'
+  const away = findOpponentScore(scoreList, awayId)?.formattedPoints ?? '0'
+  return `${home}-${away}`
+}
+
+export function buildLiveRedCard(event: EventItem_DafaBet, homeId?: number, awayId?: number) {
+  const home = findOpponentScore(event.match, homeId)?.redCards ?? 0
+  const away = findOpponentScore(event.match, awayId)?.redCards ?? 0
+  return `${home}-${away}`
+}
+
+export function buildLiveStat(event: EventItem_DafaBet) {
+  const period =
+    `${event.currentPeriod ?? ''} ${event.currentPeriodAbbreviation ?? ''}`.toLowerCase()
+  if (period.includes('half time') || period.includes('halftime') || /\bht\b/.test(period)) {
+    return 'HT'
+  }
+
+  const periodNumber = event.currentPeriodNumber
+  const minutes = event.clock?.minutes
+  if (event.currentPeriodAbbreviation === 'QTR' && periodNumber && typeof minutes === 'number') {
+    return `Q${periodNumber} ${minutes}'`
+  }
+  if ((periodNumber === 1 || periodNumber === 2) && typeof minutes === 'number') {
+    return `${periodNumber}H ${minutes}'`
+  }
+
+  return 'LIVE'
+}
