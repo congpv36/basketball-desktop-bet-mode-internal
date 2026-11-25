@@ -1,7 +1,8 @@
+import { createHash } from 'crypto'
+
 import { AccountType } from '@shared/common/types'
 
 import {
-  EVENTS_API_HASH,
   EVENTS_API_LOCALE,
   getBaseUrl,
   NO_VALUE_DAFABET
@@ -11,7 +12,6 @@ import {
   OpponentScore_DafaBet,
   Outcome_DafaBet
 } from '@/worker/platform/DafaBet/common/types'
-
 export function buildPlatformUrl(account: AccountType, type: string) {
   const url = getBaseUrl(account.loginURL)
 
@@ -27,8 +27,9 @@ export function buildCouponsUrl(couponId: string | number) {
   return `https://sports.dafabet.com/api/coupons/${couponId}?coupon_info=true&pub=${Math.floor(Date.now() / 1000)}&l=en&mc=web`
 }
 
-export function buildEventsUrl() {
-  return `https://sports.dafabet.com/xapi/rest/events?hash=${EVENTS_API_HASH}&l=${EVENTS_API_LOCALE}`
+export function buildEventsUrl(body: string) {
+  const hash = createHash('md5').update(body).digest('hex')
+  return `https://sports.dafabet.com/xapi/rest/events?hash=${hash}&l=${EVENTS_API_LOCALE}`
 }
 
 export function buildEventDetailUrl(eventId: string | number, isRunning = false) {
@@ -54,7 +55,6 @@ export function buildBetslipSelectionsUrl() {
   return `https://sports.dafabet.com/xapi/rest/betslips/selections?l=${EVENTS_API_LOCALE}`
 }
 
-// TODO: min_amount is copied from the captured browser request, verify its meaning
 export function buildPlaceBetUrl(accountId: string | number, uuid: string) {
   return `https://sports.dafabet.com/xapi/rest/accounts/${accountId}/betslips?valid=true&min_amount=4999&uuid=${uuid}&l=${EVENTS_API_LOCALE}`
 }
@@ -67,6 +67,8 @@ export function getCookieValue(cookie: string, name: string) {
   const match = cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`))
   return match ? match[1] : ''
 }
+
+const MAX_MARKET_PER_EVENT = 50
 
 export function buildLiveEventsUrl() {
   const params = new URLSearchParams({
@@ -91,7 +93,7 @@ export function buildLiveEventsUrl() {
     excludeLongTermSuspended: 'true',
     excludeMarketByOpponent: 'true',
     maxMarketsPerMarketType: '3',
-    maxMarketPerEvent: '50',
+    maxMarketPerEvent: String(MAX_MARKET_PER_EVENT),
     l: EVENTS_API_LOCALE
   })
 
@@ -178,7 +180,7 @@ export function buildEventsPayload(
     excludeLongTermSuspended: true,
     excludeMarketByOpponent: true,
     maxMarketsPerMarketType: 3,
-    maxMarketPerEvent: 50,
+    maxMarketPerEvent: String(MAX_MARKET_PER_EVENT),
     marketTypeIds: BASKETBALL_MARKET_TYPE_IDS,
     periodTypeIds: BASKETBALL_PERIOD_TYPE_IDS
   }

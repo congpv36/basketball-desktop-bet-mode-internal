@@ -132,7 +132,6 @@ export default function MainShowOdd({ sportsBook: _sportsBook }: { sportsBook: S
         return
       }
 
-      setAccountsLoaded(false)
       setData(result.data as LeagueEntry[])
 
       if (result.changedKeys.length > 0) {
