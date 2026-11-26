@@ -29,7 +29,7 @@ export const getDataSingBet = async (account: AccountType, gameType: string) => 
       p3type: '',
       date: 'all',
       gtype: 'bk',
-      ltype: '3',
+      ltype: account.ltype || '3',
       cupFantasy: 'N',
       sorttype: 'L',
       specialClick: '',
